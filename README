@@ -1,3 +1,10 @@
-Python 3 wrapper for dnsmadeeasy RESTful api
+Python 3 wrapper for dnsmadeeasy REST api
 
-work in progress... 
+Depends on:
+
+httplib2
+json
+hashlib
+hmac
+
+Example usage is in example.py
