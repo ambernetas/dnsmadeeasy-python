@@ -3,7 +3,7 @@ from dme import dme
 
 def main():
     # Sandbox Auth info
-    dns = dme("338b82e0-ce01-4185-83ae-839f261708f7", "1ae2ea2d-53d6-4468-9c46-b1607733a8da")
+    dns = dme("API KEY", "SECRET KEY")
         
 #    # Example use of 'list_domains' returns a list of all domains
     print("\nList all domains: \n")
