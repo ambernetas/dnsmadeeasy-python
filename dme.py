@@ -39,13 +39,13 @@ class dme:
     def __init__(self, apikey, secret):
         self.api = apikey
         self.secret = secret
-        self.baseurl = "http://api.sandbox.dnsmadeeasy.com/V1.2/"
+        # self.baseurl = "http://api.sandbox.dnsmadeeasy.com/V1.2/"
         # use below url for real api access. above is sandbox.
-        #self.baseurl = "http://api.dnsmadeeasy.com/V1.2/"
+        self.baseurl = "http://api.dnsmadeeasy.com/V1.2/"
     def _headers(self):
         rightnow = self._get_date()
         hashstring = self._create_hash(rightnow)
-        headers = {'x-dnsme-apiKey' : self.api, 'x-dnsme-hmac' : hashstring, 'x-dnsme-requestDate' : rightnow, 'content-type' : 'application/json' }
+        headers = {'x-dnsme-apiKey' : self.api, 'x-dnsme-hmac' : hashstring, 'x-dnsme-requestDate' : rightnow, 'content-type' : 'application/json' , 'accept' : 'application/json' }
         return headers
     
     def _get_date(self):
@@ -116,8 +116,14 @@ class dme:
             records.append(record)
         return records
         
-    def add_record(self, domain, data):
-        jsonresponse = self._rest_connect('domains/' + domain + '/records', 'POST', data)
+    def add_record(self, domain, **kwargs):
+        data = {'name': None,
+                'data': None,
+                'type': 'A',
+                'gtdLocation': None,
+                'ttl': 1800}
+        data.update(kwargs)
+        jsonresponse = self._rest_connect('domains/' + domain + '/records', 'POST', json.dumps(data))
         return jsonresponse
 
     ########################################################################
@@ -133,9 +139,10 @@ class dme:
         return response
         
     
-    def update_record_byid(self, domain, id, data):
-        
-        response = self._rest_connect('domains/' + domain + '/records/' + id, 'PUT', data)
+    def update_record_byid(self, domain, id, **kwargs):
+        data = self.get_record_byid(domain, id)
+        data.update(kwargs)
+        response = self._rest_connect('domains/' + domain + '/records/' + id, 'PUT', json.dumps(data))
         return response
        
 
