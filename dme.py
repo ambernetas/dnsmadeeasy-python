@@ -30,7 +30,7 @@ import json
 from time import strftime, gmtime
 import hashlib
 import hmac
-
+from urllib import urlencode
 
 class dme:
     """
@@ -50,7 +50,7 @@ class dme:
     
     def _get_date(self):
         return strftime("%a, %d %b %Y %H:%M:%S +0000", gmtime())
-
+    
     def _create_hash(self, rightnow):
         return hmac.new(self.secret.encode(), rightnow.encode(), hashlib.sha1).hexdigest()
     
@@ -67,11 +67,11 @@ class dme:
         else:
             print(content)
             raise Exception("Error talking to dnsmadeeasy: " + response['status'])               
-
+    
     ########################################################################
     #  /domains
     ########################################################################
-
+    
     def list_domains(self):
         domains = []
         jsonresponse = self._rest_connect('domains', 'GET')
@@ -84,11 +84,11 @@ class dme:
     def delete_domains(self):
         jsonresponse = self._rest_connect('domains', 'DELETE')
         return jsonresponse
- 
+    
     ########################################################################
     #  /domains/{domainName}
     ########################################################################
-
+    
     def get_domain(self, domain):
         domain_info = []
         jsonresponse = self._rest_connect('domains/' + domain, 'GET' )
@@ -103,12 +103,11 @@ class dme:
     def add_domain(self, domain):
         jsonresponse = self._rest_connect('domains/' + domain, 'PUT')
         return jsonresponse
- 
+    
     ########################################################################
     #  /domains/{domainName}/records
     ########################################################################
-
-  
+    
     def get_records(self, domain):
         records = []
         jsonresponse = self._rest_connect('domains/' + domain + '/records', 'GET')
@@ -125,7 +124,12 @@ class dme:
         data.update(kwargs)
         jsonresponse = self._rest_connect('domains/' + domain + '/records', 'POST', json.dumps(data))
         return jsonresponse
-
+    
+    def find_record(self, domain, **kwargs):
+        query = urlencode(kwargs)
+        jsonresponse = self._rest_connect('domains/' + domain + '/records?' + query, 'GET')
+        return jsonresponse
+    
     ########################################################################
     #  /domains/{domainName}/records/{recordId}
     ########################################################################
@@ -133,16 +137,15 @@ class dme:
     def get_record_byid(self, domain, id):
         jsonresponse = self._rest_connect('domains/' + domain + '/records/' + id, 'GET')
         return jsonresponse
-        
+    
     def delete_record_byid(self, domain, id):
         response = self._rest_connect('domains/' + domain + '/records/' + id, 'DELETE')
         return response
-        
     
     def update_record_byid(self, domain, id, **kwargs):
         data = self.get_record_byid(domain, id)
         data.update(kwargs)
         response = self._rest_connect('domains/' + domain + '/records/' + id, 'PUT', json.dumps(data))
         return response
-       
+    
 
